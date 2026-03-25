@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexathon | Prove You Code</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --text: #f0f0f0;
+    --muted: #888;
+    --dim: #444;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 80px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border-left: none;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    writing-mode: vertical-rl;
+    transition: color 0.3s;
+    display: block;
+    white-space: nowrap;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  main { margin-right: 0; }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 60px 100px 100px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #canvas-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 70% 70% at 40% 60%, black 40%, transparent);
+    z-index: 0;
+  }
+
+  .hero-content-wrapper {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+  }
+
+  .hero-overline {
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    max-width: 90%;
+    line-height: 1.4;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(4rem, 10vw, 11rem);
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    margin-bottom: 56px;
+  }
+
+  .hero-title .outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(255,255,255,0.2);
+  }
+
+  .hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 60px; }
+  .hero-sub { max-width: 440px; font-size: 1rem; font-weight: 300; line-height: 1.85; color: var(--muted); }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 36px; }
+  .hero-stats { display: flex; gap: 52px; }
+  .hero-stat-label { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+  .hero-stat-val { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); }
+
+  .register-btn {
+    display: inline-block;
+    border: 1px solid var(--border-strong);
+    padding: 14px 40px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s, border-color 0.3s;
+  }
+
+  .register-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: translateX(-101%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+  }
+
+  .register-btn:hover::before { transform: translateX(0); }
+  .register-btn:hover { color: var(--bg); border-color: var(--white); }
+  .register-btn span { position: relative; z-index: 1; }
+
+  .toast {
+    position: fixed;
+    bottom: 44px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.28s ease, transform 0.28s ease;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .purpose-wrapper {
+    position: relative;
+    background: var(--bg);
+    height: 200vh;
+  }
+
+  .sticky-box {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .heading-group {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 200px;
+    z-index: 10;
+  }
+
+  .word {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 10vw, 9rem);
+    text-transform: uppercase;
+    line-height: 1;
+    position: absolute;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+  }
+
+  .seeking { color: var(--white); z-index: 5; }
+  .talent  { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.4); z-index: 4; }
+
+  .real-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.8rem);
+    color: var(--white);
+    opacity: 0;
+    z-index: 6;
+    font-weight: 300;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: 0.3em; 
+  }
+
+  .content-reveal {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    padding: 40px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 5;
+    transform: translateY(40px);
+  }
+
+  .desc-text { font-size: 1.1rem; color: var(--muted); line-height: 1.85; font-weight: 300; }
+  .feature-list { list-style: none; border-left: 1px solid var(--border-strong); padding-left: 40px; }
+  .feature-list h4 { font-size: 1rem; color: var(--white); font-weight: 500; margin-bottom: 8px; }
+  .feature-list p  { color: var(--dim); font-size: 0.88rem; line-height: 1.6; }
+  .feature-list li + li { margin-top: 30px; }
+
+  .rounds-outer { position: relative; background: var(--surface); }
+  .rounds-sticky-wrapper { display: grid; grid-template-columns: 0.8fr 1.2fr; height: 100vh; width: 100%; overflow: hidden; }
+  .rounds-left { display: flex; flex-direction: column; justify-content: center; padding-left: 80px; border-right: 1px solid var(--border); }
+  .rounds-left h2 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 5vw, 5rem); line-height: 1; font-weight: 900; }
+  .rounds-right { display: flex; flex-direction: column; justify-content: center; padding: 0 80px; height: 100vh; }
+
+  .round-card-pinned { border-bottom: 1px solid var(--border); padding: 20px 0; width: 100%; transition: all 0.4s ease-out; }
+  .round-card-pinned:last-child { border-bottom: none; }
+  .round-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; color: var(--muted); transition: color 0.4s ease, font-size 0.4s ease; margin-bottom: 8px; }
+  .round-card-pinned.active .round-title { color: var(--white); font-size: clamp(2.2rem, 4vw, 3.2rem); }
+  .round-content-wrapper { height: 0; overflow: hidden; opacity: 0; }
+  .round-subtitle { font-size: 1rem; font-weight: 300; font-style: italic; color: var(--muted); margin: 10px 0 20px; }
+  .round-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .round-list li { display: flex; align-items: baseline; gap: 12px; font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+  .round-list li::before { content: '•'; color: var(--dim); }
+
+  .timeline-section { width: 100%; padding: 120px 0; border-top: 1px solid var(--border); }
+  .timeline-header { padding: 0 80px; margin-bottom: 60px; }
+  .tl-container { width: 100%; padding: 0 80px; position: relative; }
+  .tl-track { display: flex; width: 100%; position: relative; justify-content: space-between; }
+  .tl-track::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 1px; background: var(--border-strong); z-index: 0; }
+  .tl-progress-line { position: absolute; top: 20px; left: 0; width: 0%; height: 2px; background: var(--white); box-shadow: 0 0 15px rgba(255,255,255,0.6); z-index: 1; }
+  .tl-item { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
+  .tl-node { width: 40px; height: 40px; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 50%; margin-bottom: 24px; transition: all 0.4s ease; }
+  .tl-label { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: 0.3s; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 100px 0 80px; }
+  .section-heading-large { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; line-height: 1.1; color: var(--text); }
+  .lb-card { position: relative; border: 1px solid var(--border); background: var(--surface); padding: 100px 80px; overflow: hidden; margin-bottom: 150px; }
+  .lb-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Playfair Display', serif; font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; letter-spacing: 0.1em; }
+  .lb-content { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+  .lb-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; line-height: 1.1; }
+  .lb-btn { display: inline-block; border: 1px solid var(--border-strong); padding: 20px 50px; color: var(--dim); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em; cursor: not-allowed; }
+
+  .fade-up { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">Registration is not open yet</div>
+
+<nav>
+  <ul class="nav-links">
+    <li><a href="#purpose">About</a></li>
+    <li><a href="#rounds">Rounds</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#leaderboard">Leaderboard</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div id="canvas-container"></div>
+    <div class="hero-content-wrapper">
+      <div class="hero-overline">A coding competition unlike any other</div>
+      <h1 class="hero-title">Prove<br><span class="outline">You</span><br>Code.</h1>
+      <div class="hero-bottom">
+        <p class="hero-sub">Nexathon separates the <strong>real engineers</strong> from the crowd. Three rounds, one leaderboard that doesn't lie. <strong>Rewarding skill, not presentation.</strong></p>
+        <div class="hero-right">
+          <div class="hero-stats">
+            <div><div class="hero-stat-label">Duration</div><div class="hero-stat-val">95 <span style="font-size:1rem; font-weight:300;">hrs</span></div></div>
+            <div><div class="hero-stat-label">Rounds</div><div class="hero-stat-val">3</div></div>
+          </div>
+          <button class="register-btn" id="registerBtn"><span>Register Here</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="purpose-wrapper" id="purpose">
+    <div class="sticky-box">
+      <div class="heading-group">
+        <span class="word seeking">Seeking</span>
+        <span class="real-tag">REAL</span>
+        <span class="word talent">Talent</span>
+      </div>
+      <div class="content-reveal">
+        <div class="col-left">
+          <p class="desc-text">We cut through the noise to find engineers who actually build. No hype, just high-performance logic and real-world impact.</p>
+        </div>
+        <div class="col-right">
+          <ul class="feature-list">
+            <li class="reveal-item">
+              <h4>Pure Logic</h4>
+              <p>Rankings based on code quality and execution speed — not presentation or polished demos.</p>
+            </li>
+            <li class="reveal-item">
+              <h4>Multi-dimensional</h4>
+              <p>Speed, depth of thinking, and collaborative execution all count toward the final leaderboard.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rounds-outer" id="rounds">
+    <div class="rounds-sticky-wrapper">
+      <div class="rounds-left">
+        <h2>OUR<br>ROUNDS</h2>
+      </div>
+      <div class="rounds-right">
+        <div class="round-card-pinned" id="card-1">
+          <h3 class="round-title">Competitive Programming</h3>
+          <div class="round-content-wrapper" id="content-1">
+            <p class="round-subtitle">Where speed meets precision.</p>
+            <ul class="round-list">
+              <li>Crack problems, optimise solutions, climb fast</li>
+              <li>Real-time rankings updated as you submit</li>
+              <li>Automated judge. No bias, no grey areas</li>
+            </ul>
+          </div>
+        </div>
+        <div class="round-card-pinned" id="card-2">
+          <h3 class="round-title">Panelist Round</h3>
+          <div class="round-content-wrapper" id="content-2">
+            <p class="round-subtitle">Thinking is everything.</p>
+            <ul class="round-list">
+              <li>Problem-solving approach under scrutiny</li>
+              <li>Deep technical understanding assessed</li>
+              <li>Think out loud. Defend your decisions</li>
+            </ul>
+          </div>
+        </div>
+        <div class="round-card-pinned" id="card-3">
+          <h3 class="round-title">OSS Sprint</h3>
+          <div class="round-content-wrapper" id="content-3">
+            <p class="round-subtitle">From ideas to real impact.</p>
+            <ul class="round-list">
+              <li>Work on real open-source repositories</li>
+              <li>Contributions measured by quality and volume</li>
+              <li>Build, collaborate, ship. For the real world</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="timeline-section" id="timeline">
+    <div class="timeline-header fade-up">
+      <h2 class="section-heading-large">The journey<br>begins here.</h2>
+    </div>
+    <div class="tl-container">
+      <div class="tl-track">
+        <div class="tl-progress-line"></div>
+        <div class="tl-item" id="node-reg"><div class="tl-node"></div><div class="tl-label">Registration</div></div>
+        <div class="tl-item" id="node-r1"><div class="tl-node"></div><div class="tl-label">Round 1</div></div>
+        <div class="tl-item" id="node-r2"><div class="tl-node"></div><div class="tl-label">Round 2</div></div>
+        <div class="tl-item" id="node-r3"><div class="tl-node"></div><div class="tl-label">Round 3</div></div>
+        <div class="tl-item" id="node-eval"><div class="tl-node"></div><div class="tl-label">Evaluation</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="fade-up" id="leaderboard">
+      <h2 class="section-heading-large" style="padding-top:100px; margin-bottom:60px;">Real-time<br>rankings.</h2>
+      <div class="lb-card">
+        <div class="lb-watermark">LEADERBOARD</div>
+        <div class="lb-content">
+          <div>
+            <h2 class="lb-title">Track every move.</h2>
+            <p style="margin-top: 20px; color: var(--muted); max-width: 420px; line-height: 1.8;">The leaderboard goes live once Round 1 begins. Watch rankings shift second by second.</p>
+          </div>
+          <a href="#" class="lb-btn" onclick="return false;">COMING SOON</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  const registerBtn = document.getElementById('registerBtn');
+  const toast = document.getElementById('toast');
+  let toastTimer;
+
+  registerBtn.addEventListener('click', () => {
+    clearTimeout(toastTimer);
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  });
+</script>
+
+<script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  const canvasContainer = document.getElementById('canvas-container');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
+  camera.position.z = 8;
+  camera.position.y = 1;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  canvasContainer.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+  const spot = new THREE.PointLight(0xffffff, 20);
+  spot.position.set(5, 5, 5);
+  scene.add(spot);
+
+  let falcon;
+  const loader = new GLTFLoader();
+  loader.load(
+    '/public/millennium_falcon.glb',
+    (gltf) => {
+      falcon = gltf.scene;
+      const box = new THREE.Box3().setFromObject(falcon);
+      const center = box.getCenter(new THREE.Vector3());
+      falcon.position.sub(center);
+      falcon.position.x = 3;
+      falcon.scale.set(1.6, 1.6, 1.6);
+      scene.add(falcon);
+      initScrollAnimations();
+    },
+    undefined,
+    () => { initScrollAnimations(); }
+  );
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (falcon) falcon.rotation.y += 0.0015;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  function initScrollAnimations() {
+
+    gsap.set(".seeking",        { x: -500, opacity: 0 });
+    gsap.set(".talent",         { x: 500,  opacity: 0 });
+    gsap.set(".real-tag",       { opacity: 0, scale: 0.85, xPercent: -50, yPercent: -50, left: "50%", top: "50%" });
+    gsap.set(".content-reveal", { visibility: "visible", opacity: 0, y: 40 });
+    gsap.set(".reveal-item",    { y: 20, opacity: 0 });
+
+    const purposeTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#purpose",
+        start: "top top",
+        end: "+=100%",
+        scrub: 0.7,
+        pin: ".sticky-box",
+        anticipatePin: 1,
+        pinSpacing: true
+      }
+    });
+
+    purposeTL
+      .to(".seeking", { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
+      .to(".talent",  { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
+
+      .to(".seeking",  { y: -70, scale: 0.5, duration: 0.5, ease: "power2.inOut" }, 0.35)
+      .to(".talent",   { y: 70,  scale: 0.5, webkitTextStroke: "1px rgba(255,255,255,1)", duration: 0.5, ease: "power2.inOut" }, 0.35)
+
+      .to(".real-tag", { opacity: 1, scale: 1.1, duration: 0.5, ease: "power2.out" }, 0.35)
+
+      .to(".heading-group", { y: "-10vh", scale: 0.8, duration: 0.45, ease: "power3.inOut" }, 0.75)
+
+      .to(".content-reveal", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.95)
+      .to(".reveal-item",    { opacity: 1, y: 0, stagger: 0.15, duration: 0.4, ease: "sine.out" }, 1.1);
+
+    if (falcon) {
+      purposeTL
+        .to(camera.position, { z: 0.2, y: 0, ease: "none", duration: 0.6 }, 0.2)
+        .to(falcon.rotation, { y: Math.PI * 2, ease: "power2.in", duration: 0.6 }, 0.2);
+    }
+
+    const roundsTL = gsap.timeline({
+      scrollTrigger: { trigger: ".rounds-outer", start: "top top", end: "+=300%", pin: true, scrub: 0.6 }
+    });
+    gsap.set("#card-1", { className: "round-card-pinned active" });
+    gsap.set("#content-1", { height: "auto", opacity: 1 });
+
+    roundsTL
+      .to({}, { duration: 0.8 })
+      .to("#content-1", { height: 0, opacity: 0, duration: 0.8 })
+      .to("#card-1", { className: "round-card-pinned", duration: 0.1 }, "<")
+      .to("#card-2", { className: "round-card-pinned active", duration: 0.1 }, "<")
+      .to("#content-2", { height: "auto", opacity: 1, duration: 0.8 }, "<")
+      .to({}, { duration: 0.8 })
+      .to("#content-2", { height: 0, opacity: 0, duration: 0.8 })
+      .to("#card-2", { className: "round-card-pinned", duration: 0.1 }, "<")
+      .to("#card-3", { className: "round-card-pinned active", duration: 0.1 }, "<")
+      .to("#content-3", { height: "auto", opacity: 1, duration: 0.8 }, "<");
+
+    const timelineTL = gsap.timeline({
+      scrollTrigger: { trigger: "#timeline", start: "top 60%", end: "top 10%", scrub: 1 }
+    });
+    const nodeOn  = { backgroundColor: "#fff", borderColor: "#fff", boxShadow: "0 0 20px rgba(255,255,255,0.4)", scale: 1.1 };
+    const labelOn = { color: "#fff", fontWeight: "500" };
+
+    timelineTL
+      .to("#node-reg .tl-node", nodeOn, 0).to("#node-reg .tl-label", labelOn, 0)
+      .to(".tl-progress-line", { width: "25%", duration: 1 })
+      .to("#node-r1 .tl-node", nodeOn).to("#node-r1 .tl-label", labelOn, "<")
+      .to(".tl-progress-line", { width: "50%", duration: 1 })
+      .to("#node-r2 .tl-node", nodeOn).to("#node-r2 .tl-label", labelOn, "<")
+      .to(".tl-progress-line", { width: "75%", duration: 1 })
+      .to("#node-r3 .tl-node", nodeOn).to("#node-r3 .tl-label", labelOn, "<")
+      .to(".tl-progress-line", { width: "100%", duration: 1 })
+      .to("#node-eval .tl-node", nodeOn).to("#node-eval .tl-label", labelOn, "<");
+  }
+
+  window.addEventListener('resize', () => {
+    camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+  });
+</script>
+
+</body>
+</html>

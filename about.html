@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXATHON | About</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #0a0a0a;
+            --glass-white: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --ship-transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+            --saber-blue: #008cff;
+            --saber-red: #ff003c;
+        }
+
+        body::-webkit-scrollbar { display: none; }
+        body { 
+            margin: 0;
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+        nav {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            transition: 0.4s;
+            writing-mode: vertical-rl; 
+            text-orientation: mixed;
+            padding: 8px 4px;
+        }
+        .nav-links a:hover { opacity: 1; text-shadow: 0 0 10px #fff; }
+
+        .canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        model-viewer {
+            width: 100vw;
+            height: 100vh;
+            transition: var(--ship-transition);
+        }
+
+        .pos-hero { transform: translateX(0) scale(1.5); opacity: 1; } 
+        .pos-left { transform: translateX(-30%) scale(0.95); opacity: 1; }
+        .pos-right { transform: translateX(30%) scale(0.95); opacity: 1; }
+        .ship-hidden { opacity: 0 !important; transform: scale(0.5) translateY(100px) !important; }
+
+        section {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 12%;
+            box-sizing: border-box;
+        }
+
+        .content-card {
+            background: var(--glass-white);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            max-width: 550px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: 0.8s ease-out;
+        }
+
+        section.active .content-card { opacity: 1; transform: translateY(0); }
+        .hero-card { background: rgba(255, 255, 255, 0.1) !important; color: #000 !important; }
+        .hero-card h1, .hero-card .desc { color: #000 !important; }
+
+        .logo-slider { width: 100%; overflow: hidden; padding: 25px 0; background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin: 20px 0; }
+        .logo-track { display: flex; width: calc(200px * 12); animation: scrollLogo 20s linear infinite; }
+        .logo-item { width: 200px; flex-shrink: 0; display: flex; justify-content: center; }
+        .logo-item img { height: 40px; filter: grayscale(100%); transition: 0.4s; opacity: 0.7; }
+        .logo-item img:hover { filter: grayscale(0%); opacity: 1; }
+        @keyframes scrollLogo { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-200px * 6)); } }
+
+        .saber-wrapper { height: 300vh; background: #000; position: relative; z-index: 10; }
+        .saber-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; }
+        
+        .saber-container { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
+        
+        .saber { width: 400px; height: 8px; background: #fff; border-radius: 10px; transition: 0.6s all ease; box-shadow: 0 0 10px #fff; }
+        .saber.blue { background: var(--saber-blue); box-shadow: 0 0 25px var(--saber-blue), 0 0 50px var(--saber-blue); }
+        .saber.red { background: var(--saber-red); box-shadow: 0 0 25px var(--saber-red), 0 0 50px var(--saber-red); }
+        .saber-text-center { font-family: 'Orbitron'; font-size: 1.5rem; text-align: center; letter-spacing: 10px; color: white; margin: 20px 0; }
+        
+        .side-label { 
+            position: absolute; 
+            top: 15%; 
+            font-family: 'Orbitron'; 
+            font-weight: 900; 
+            font-size: 1.8rem; 
+            letter-spacing: 5px; 
+            opacity: 0; 
+            transition: 0.5s ease-out; 
+            white-space: nowrap;
+        }
+        .side-label.blue { color: var(--saber-blue); text-shadow: 0 0 15px var(--saber-blue); }
+        .side-label.red { color: var(--saber-red); text-shadow: 0 0 15px var(--saber-red); }
+        .side-label.active { opacity: 1; transform: translateY(-5px); }
+        .side-details { position: absolute; bottom: 15%; width: 70%; text-align: center; font-size: 1.1rem; opacity: 0; transition: 0.5s; color: #fff; }
+        .side-details.active { opacity: 1; transform: translateY(-10px); }
+        .align-center { justify-content: center; text-align: center; }
+        .align-left { justify-content: flex-start; }
+        .align-right { justify-content: flex-end; }
+        h1 { font-family: 'Orbitron'; font-size: 2.8rem; margin-bottom: 15px; font-weight: 900; }
+        .desc { opacity: 0.8; line-height: 1.8; margin-bottom: 25px; }
+        .btn { padding: 14px 35px; border: 1px solid white; background: transparent; color: white; cursor: pointer; font-family: 'Orbitron'; transition: 0.3s; font-size: 0.8rem; }
+        .btn:hover { background: white; color: black; }
+        .btn-dark { border-color: #000; color: #000; }
+        .btn-dark:hover { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#achievements">Achievements</a>
+            <a href="#contributions">Contributions</a>
+            <a href="#sponsors">Sponsors</a>
+        </div>
+    </nav>
+
+    <div class="canvas-container">
+        <model-viewer id="ship" src="/public/lambda_t-a_shuttle.glb" auto-rotate rotation-per-second="15deg" class="pos-hero"></model-viewer>
+    </div>
+
+    <section id="about" class="align-center" data-model="pos-hero">
+        <div class="content-card hero-card">
+            <h1>WHAT IS NEXATHON</h1>
+            <p class="desc">The ultimate convergence of technology and creativity—an interstellar journey where innovators push the boundaries of the digital universe.</p>
+            <button class="btn btn-dark">EXPLORE MISSION</button>
+        </div>
+    </section>
+
+    <section id="achievements" class="align-left" data-model="pos-right">
+        <div class="content-card">
+            <h1>PAST ACHIEVEMENTS</h1>
+            <p class="desc">Our previous missions have achieved incredible milestones, bringing thousands of developers together to build groundbreaking solutions.</p>
+            <button class="btn">VIEW ARCHIVE</button>
+        </div>
+    </section>
+
+    <section id="contributions" class="align-right" data-model="pos-left">
+        <div class="content-card">
+            <h1>CONTRIBUTIONS</h1>
+            <p class="desc">Every commit is a step towards the stars. Join our open-source fleet and build the core engine of decentralized tech.</p>
+            <button class="btn">START CODING</button>
+        </div>
+    </section>
+
+    <section id="sponsors" class="align-left" data-model="pos-right">
+        <div class="content-card" style="max-width: 750px;">
+            <h1>SPONSORS</h1>
+            <div class="logo-slider">
+                <div class="logo-track">
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg"></div>
+                </div>
+            </div>
+            <p class="desc">Fueled by global leaders. Join the fleet to accelerate the innovators of tomorrow.</p>
+            <button class="btn">JOIN THE FLEET</button>
+        </div>
+    </section>
+
+    <div id="path" class="saber-wrapper">
+        <div class="saber-sticky">
+            
+            <div id="label-light" class="side-label blue">LIGHT SIDE</div>
+            <div id="label-dark" class="side-label red">DARK SIDE</div>
+
+            <div class="saber-container">
+                <div class="saber" id="saber-top"></div>
+                <div class="saber-text-center">THERE IS NO<br>NEUTRAL</div>
+                <div class="saber" id="saber-bottom"></div>
+            </div>
+            
+            <div id="details-light" class="side-details">This part of hackathon is logical and values stability and morality.</div>
+            <div id="details-dark" class="side-details">Take the risk responsibly to make a better move.</div>
+        </div>
+    </div>
+
+    <script>
+        const ship = document.getElementById('ship');
+        const sections = document.querySelectorAll('section');
+        const saberWrapper = document.querySelector('.saber-wrapper');
+        const saberTop = document.getElementById('saber-top');
+        const saberBottom = document.getElementById('saber-bottom');
+        const lightDetails = document.getElementById('details-light');
+        const darkDetails = document.getElementById('details-dark');
+        const labelLight = document.getElementById('label-light');
+        const labelDark = document.getElementById('label-dark');
+
+        let isSaberMode = false;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isSaberMode) {
+                    const newClass = entry.target.getAttribute('data-model');
+                    ship.className = ''; 
+                    ship.classList.add(newClass);
+                    sections.forEach(s => s.classList.remove('active'));
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.4 });
+
+        sections.forEach(s => observer.observe(s));
+
+        window.addEventListener('scroll', () => {
+            const wrapperRect = saberWrapper.getBoundingClientRect();
+            const scrollProgress = -wrapperRect.top / (wrapperRect.height - window.innerHeight);
+
+            if (wrapperRect.top < window.innerHeight / 1.5) { 
+                isSaberMode = true;
+                ship.classList.add('ship-hidden');
+            } else {
+                if (isSaberMode) {
+                    isSaberMode = false;
+                    ship.classList.remove('ship-hidden');
+                    sections.forEach(s => {
+                        const rect = s.getBoundingClientRect();
+                        if(rect.top >= 0 && rect.top < window.innerHeight) {
+                            ship.className = s.getAttribute('data-model');
+                        }
+                    });
+                }
+            }
+
+            if (scrollProgress >= 0 && scrollProgress <= 1) {
+                if (scrollProgress < 0.4) {
+                    saberTop.className = 'saber blue';
+                    saberBottom.className = 'saber blue';
+                    labelLight.classList.add('active');
+                    labelDark.classList.remove('active');
+                    lightDetails.classList.add('active');
+                    darkDetails.classList.remove('active');
+                } else if (scrollProgress > 0.6) {
+                    saberTop.className = 'saber red';
+                    saberBottom.className = 'saber red';
+                    labelDark.classList.add('active');
+                    labelLight.classList.remove('active');
+                    darkDetails.classList.add('active');
+                    lightDetails.classList.remove('active');
+                } else {
+                    saberTop.className = 'saber';
+                    saberBottom.className = 'saber';
+                    labelLight.classList.remove('active');
+                    labelDark.classList.remove('active');
+                    lightDetails.classList.remove('active');
+                    darkDetails.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

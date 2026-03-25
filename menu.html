@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexathon V2 | Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/menu-style.css">
+
+</head>
+<body>
+  <div id="app">
+
+    <div id="video-container">
+      <video id="v1" class="bg-video" muted playsinline></video>
+      <video id="v2" class="bg-video" muted playsinline style="opacity: 0;"></video>
+    </div>
+
+    <div id="menu-backdrop"></div>
+    <div id="vignette"></div>
+    <div id="scanlines"></div>
+
+    <canvas id="menu-canvas"></canvas>
+
+    <a href="/" id="back-btn">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+
+    <div id="top-right-links">
+      <a href="#" id="sound-link">SOUND</a>
+    </div>
+
+    <nav id="left-nav">
+      <div class="nav-item active" data-symbol="home" data-href="/">
+        <span class="nav-label">Home</span>
+        <div class="nav-underline"></div>
+      </div>
+      <div class="nav-item" data-symbol="about" data-href="/about.html">
+        <span class="nav-label">About</span>
+        <div class="nav-underline"></div>
+      </div>
+      <div class="nav-item" data-symbol="contact" data-href="/contact.html">
+        <span class="nav-label">Contact</span>
+        <div class="nav-underline"></div>
+      </div>
+      <div class="nav-item" data-symbol="structure" data-href="/structure.html">
+        <span class="nav-label">Structure</span>
+        <div class="nav-underline"></div>
+      </div>
+    </nav>
+
+  </div>
+
+  <script type="module" src="/src/menu-script.js"></script>
+</body>
+</html>
