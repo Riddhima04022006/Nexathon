@@ -1,7 +1,9 @@
-import { Renderer }        from './render/render.js';
-import { MouseField }      from './interaction/mouseField.js';
-import { ParticleSystem }  from './core/particleSystem.js';
-import { MorphController } from './morph/morphController.js';
+import { Renderer }         from './render/render.js';
+import { MouseField }       from './interaction/mouseField.js';
+import { ParticleSystem }   from './core/particleSystem.js';
+import { MorphController }  from './morph/morphController.js';
+
+const isMobile = window.innerWidth <= 768;
 
 function setupVideoLoop() {
   const v1 = document.getElementById('v1');
@@ -23,10 +25,8 @@ function setupVideoLoop() {
       activeVideo.currentTime > activeVideo.duration - fadeTime
     ) {
       transitioning = true;
-
       idleVideo.currentTime = 0;
       idleVideo.play().catch(() => {});
-
       idleVideo.style.opacity = '1';
       activeVideo.style.opacity = '0';
 
@@ -59,7 +59,6 @@ function setupVideoLoop() {
   }
 }
 
-
 function setupSound() {
   const v1        = document.getElementById('v1');
   const v2        = document.getElementById('v2');
@@ -74,7 +73,6 @@ function setupSound() {
     soundLink.textContent = muted ? 'SOUND' : 'MUTE';
   });
 }
-
 
 function setupParticles() {
   const renderer = new Renderer('menu-canvas');
@@ -103,30 +101,56 @@ function setupParticles() {
     frame++;
     breathT += 0.007;
     renderer.clear();
-    mouse.tick(frame);
+    
+    if (!isMobile) {
+        mouse.tick(frame);
+    }
+    
     mc.tick();
-    ps.update(renderer.ctx, breathT, mouse.x, mouse.y, mc.isFullySettled, mc.isReforming);
+    const targetX = isMobile ? -999 : mouse.x;
+    const targetY = isMobile ? -999 : mouse.y;
+
+    ps.update(
+        renderer.ctx, 
+        breathT, 
+        targetX, 
+        targetY, 
+        mc.isFullySettled, 
+        mc.isReforming
+    );
   }
 
   animate();
 }
 
-
 function setupNav() {
   document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
+    
+    item.addEventListener('click', (e) => {
+      e.preventDefault(); 
+      const symbol = item.dataset.symbol;
       const href = item.dataset.href;
-      if (href) window.location.href = href;
-    });
 
+      if (window._menuMorph) {
+        window._menuMorph(symbol);
+      }
+      item.classList.add('active');
+      if (href) {
+        setTimeout(() => {
+          window.location.href = href;
+        }, 1200); 
+      }
+    });
     item.addEventListener('mouseenter', () => {
-      if (window._menuMorph) window._menuMorph(item.dataset.symbol);
+      if (!isMobile && window._menuMorph) {
+        window._menuMorph(item.dataset.symbol);
+      }
     });
-
-    item.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (window._menuMorph) window._menuMorph(item.dataset.symbol);
-    }, { passive: false });
+    item.addEventListener('touchstart', () => {
+      if (window._menuMorph) {
+        window._menuMorph(item.dataset.symbol);
+      }
+    }, { passive: true });
   });
 }
 

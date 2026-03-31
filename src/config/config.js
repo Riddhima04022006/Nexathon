@@ -1,8 +1,8 @@
-const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
-export const NUM_PARTICLES = isMobile ? 2500 : 8000;
-export const TRAIL_LEN     = 18;
+const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+export const NUM_PARTICLES = isMobile ? 1000 : 3500; 
 export const SETTLE_FRAMES = 80;
-export const RING_RADIUS   = 19;     
+export const RING_RADIUS   = 19;
 export const PALETTES = {
   white:  [[240,240,245],[255,255,255],[220,225,235],[250,248,255],[235,235,240],[245,245,250],[230,232,238],[255,252,255]],
   yellow: [[255,220,30],[255,200,10],[255,235,60],[245,185,5],[255,215,45],[250,195,20],[255,240,80],[240,175,0]],

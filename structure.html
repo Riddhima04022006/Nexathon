@@ -32,6 +32,7 @@
     overscroll-behavior: none;
   }
 
+  /* Desktop Nav (Remains untouched for > 1024px) */
   nav {
     position: fixed;
     top: 0; right: 0; bottom: 0;
@@ -42,7 +43,6 @@
     align-items: center;
     justify-content: center;
     background: transparent;
-    border-left: none;
   }
 
   .nav-links {
@@ -64,9 +64,31 @@
     white-space: nowrap;
   }
 
-  .nav-links a:hover { color: var(--white); }
+  /* Mobile Nav Overrides */
+  @media (max-width: 1024px) {
+    nav {
+      top: auto; left: 0; bottom: 0;
+      width: 100%; height: 60px;
+      flex-direction: row;
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .nav-links {
+      flex-direction: row;
+      gap: 0;
+      width: 100%;
+      justify-content: space-around;
+    }
+    .nav-links a {
+      writing-mode: horizontal-tb;
+      letter-spacing: 0.1em;
+      font-size: 0.65rem;
+    }
+  }
 
-  main { margin-right: 0; }
+  .nav-links a:hover { color: var(--white); }
 
   .hero {
     min-height: 100vh;
@@ -78,12 +100,19 @@
     overflow: hidden;
   }
 
+  /* Mobile Hero Adjustments */
+  @media (max-width: 768px) {
+    .hero { padding: 40px 24px 100px 24px; justify-content: center; }
+  }
+
   #canvas-container {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     z-index: 1;
     pointer-events: none;
+    opacity: 0; /* Hidden until model loads */
+    transition: opacity 1s ease;
   }
 
   .hero-grid-bg {
@@ -115,7 +144,7 @@
 
   .hero-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(4rem, 10vw, 11rem);
+    font-size: clamp(3.5rem, 10vw, 11rem);
     font-weight: 900;
     line-height: 0.88;
     letter-spacing: -0.02em;
@@ -128,10 +157,21 @@
   }
 
   .hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 60px; }
-  .hero-sub { max-width: 440px; font-size: 1rem; font-weight: 300; line-height: 1.85; color: var(--muted); }
+  
+  @media (max-width: 900px) {
+    .hero-bottom { flex-direction: column; align-items: flex-start; gap: 40px; }
+  }
+
+  .hero-sub { max-width: 440px; font-size: 1rem; font-weight: 300; line-height: 1.85; color: rgb(255, 255, 255); }
   .hero-sub strong { color: var(--text); font-weight: 500; }
 
   .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 36px; }
+  
+  @media (max-width: 900px) {
+    .hero-right { align-items: flex-start; width: 100%; }
+    .hero-stats { width: 100%; justify-content: flex-start; }
+  }
+
   .hero-stats { display: flex; gap: 52px; }
   .hero-stat-label { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
   .hero-stat-val { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); }
@@ -187,6 +227,8 @@
     -webkit-backdrop-filter: blur(10px);
   }
 
+  @media (max-width: 768px) { .toast { bottom: 80px; width: 90%; text-align: center; } }
+
   .toast.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -215,13 +257,12 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 200px;
     z-index: 10;
   }
 
   .word {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(3.5rem, 10vw, 9rem);
+    font-size: clamp(3rem, 10vw, 9rem);
     text-transform: uppercase;
     line-height: 1;
     position: absolute;
@@ -242,7 +283,6 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
@@ -263,6 +303,16 @@
     transform: translateY(40px);
   }
 
+  @media (max-width: 850px) {
+    .content-reveal { 
+        grid-template-columns: 1fr; 
+        padding: 20px 24px;
+        gap: 40px;
+        text-align: center;
+    }
+    .feature-list { padding-left: 0 !important; border-left: none !important; }
+  }
+
   .desc-text { font-size: 1.1rem; color: var(--muted); line-height: 1.85; font-weight: 300; }
   .feature-list { list-style: none; border-left: 1px solid var(--border-strong); padding-left: 40px; }
   .feature-list h4 { font-size: 1rem; color: var(--white); font-weight: 500; margin-bottom: 8px; }
@@ -271,14 +321,25 @@
 
   .rounds-outer { position: relative; background: var(--surface); }
   .rounds-sticky-wrapper { display: grid; grid-template-columns: 0.8fr 1.2fr; height: 100vh; width: 100%; overflow: hidden; }
+
+  @media (max-width: 900px) {
+    .rounds-sticky-wrapper { grid-template-columns: 1fr; }
+    .rounds-left { display: none; } 
+  }
+
   .rounds-left { display: flex; flex-direction: column; justify-content: center; padding-left: 80px; border-right: 1px solid var(--border); }
-  .rounds-left h2 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 5vw, 5rem); line-height: 1; font-weight: 900; }
-  .rounds-right { display: flex; flex-direction: column; justify-content: center; padding: 0 80px; height: 100vh; }
+  .rounds-left h2 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 5vw, 5rem); line-height: 1; font-weight: 900; padding-top: 50px; }
+  .rounds-right { display: flex; flex-direction: column; justify-content: center; padding: 0 80px; }
+
+  @media (max-width: 768px) {
+    .rounds-right { padding: 0 24px; }
+  }
 
   .round-card-pinned { border-bottom: 1px solid var(--border); padding: 20px 0; width: 100%; transition: all 0.4s ease-out; }
   .round-card-pinned:last-child { border-bottom: none; }
-  .round-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; color: var(--muted); transition: color 0.4s ease, font-size 0.4s ease; margin-bottom: 8px; }
-  .round-card-pinned.active .round-title { color: var(--white); font-size: clamp(2.2rem, 4vw, 3.2rem); }
+  .round-title { font-family: 'Playfair Display', serif; font-size: clamp(1.9rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; color: var(--muted); transition: color 0.4s ease, font-size 0.4s ease; margin-bottom: 8px; }
+  .round-card-pinned.active .round-title { color: var(--white); font-size: clamp(1.8rem, 4vw, 3.2rem); }
+  
   .round-content-wrapper { height: 0; overflow: hidden; opacity: 0; }
   .round-subtitle { font-size: 1rem; font-weight: 300; font-style: italic; color: var(--muted); margin: 10px 0 20px; }
   .round-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -287,17 +348,40 @@
 
   .timeline-section { width: 100%; padding: 120px 0; border-top: 1px solid var(--border); }
   .timeline-header { padding: 0 80px; margin-bottom: 60px; }
+  
+  @media (max-width: 768px) {
+    .timeline-header { padding: 0 24px; }
+    .tl-container { padding: 0 24px !important; }
+    .tl-track { flex-direction: column; gap: 40px; align-items: flex-start !important; }
+    .tl-track::before { left: 20px; top: 0; bottom: 0; width: 1px; height: 100%; }
+    .tl-progress-line { left: 23px; top: 0; width: 2px !important; height: 0%; }
+    .tl-item { flex-direction: row !important; gap: 20px; align-items: center; }
+    .tl-node { margin-bottom: 0 !important; }
+  }
+
   .tl-container { width: 100%; padding: 0 80px; position: relative; }
   .tl-track { display: flex; width: 100%; position: relative; justify-content: space-between; }
   .tl-track::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 1px; background: var(--border-strong); z-index: 0; }
-  .tl-progress-line { position: absolute; top: 20px; left: 0; width: 0%; height: 2px; background: var(--white); box-shadow: 0 0 15px rgba(255,255,255,0.6); z-index: 1; }
+  .tl-progress-line { position: absolute; top: 20px; left: 23px; width: 0%; height: 2px; background: var(--white); box-shadow: 0 0 15px rgba(255,255,255,0.6); z-index: 1; }
   .tl-item { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
   .tl-node { width: 40px; height: 40px; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 50%; margin-bottom: 24px; transition: all 0.4s ease; }
   .tl-label { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: 0.3s; }
 
   .container { max-width: 1200px; margin: 0 auto; padding: 0 100px 0 80px; }
-  .section-heading-large { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; line-height: 1.1; color: var(--text); }
+  
+  @media (max-width: 768px) {
+    .container { padding: 0 24px; }
+  }
+
+  .section-heading-large { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1.1; color: var(--text); }
   .lb-card { position: relative; border: 1px solid var(--border); background: var(--surface); padding: 100px 80px; overflow: hidden; margin-bottom: 150px; }
+  
+  @media (max-width: 850px) {
+    .lb-card { padding: 60px 24px; }
+    .lb-content { flex-direction: column; text-align: center; gap: 40px; }
+    .lb-watermark { font-size: 3rem !important; }
+  }
+
   .lb-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Playfair Display', serif; font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; letter-spacing: 0.1em; }
   .lb-content { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
   .lb-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; line-height: 1.1; }
@@ -440,9 +524,7 @@
       </div>
     </section>
   </div>
-</main>
-
-<script>
+</main><script>
   const registerBtn = document.getElementById('registerBtn');
   const toast = document.getElementById('toast');
   let toastTimer;
@@ -470,29 +552,37 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  // Intersection Observer for fade-up elements
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
+  // Three.js Setup
   const canvasContainer = document.getElementById('canvas-container');
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-  camera.position.z = 8;
+  
+  // Adjusted camera for better mobile framing
+  const isMobile = window.innerWidth < 768;
+  camera.position.z = isMobile ? 12 : 8;
   camera.position.y = 1;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+  // Optimization: Cap pixel ratio at 2 to save GPU on high-end mobile devices
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   canvasContainer.appendChild(renderer.domElement);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 1));
-  const spot = new THREE.PointLight(0xffffff, 20);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  const spot = new THREE.PointLight(0xffffff, 25);
   spot.position.set(5, 5, 5);
   scene.add(spot);
 
   let falcon;
   const loader = new GLTFLoader();
+
+  // Load the model
   loader.load(
     '/public/millennium_falcon.glb',
     (gltf) => {
@@ -500,15 +590,27 @@
       const box = new THREE.Box3().setFromObject(falcon);
       const center = box.getCenter(new THREE.Vector3());
       falcon.position.sub(center);
-      falcon.position.x = 3;
+      
+      // RESTORING YOUR ORIGINAL DIMENSIONS
       falcon.scale.set(1.6, 1.6, 1.6);
+      
+      if (window.innerWidth > 1024) {
+        // EXACT DESKTOP FLOW
+        falcon.position.x = 3; 
+        camera.position.z = 8;
+        camera.position.y = 1;
+      } else {
+        falcon.position.x = 0; 
+        camera.position.z = 10; 
+      }
+      
       scene.add(falcon);
+      canvasContainer.style.opacity = "1";
       initScrollAnimations();
     },
     undefined,
     () => { initScrollAnimations(); }
   );
-
   function animate() {
     requestAnimationFrame(animate);
     if (falcon) falcon.rotation.y += 0.0015;
@@ -517,12 +619,21 @@
   animate();
 
   function initScrollAnimations() {
-
-    gsap.set(".seeking",        { x: -500, opacity: 0 });
-    gsap.set(".talent",         { x: 500,  opacity: 0 });
-    gsap.set(".real-tag",       { opacity: 0, scale: 0.85, xPercent: -50, yPercent: -50, left: "50%", top: "50%" });
+    // 1. Purpose Section Timeline
+    gsap.set(".seeking", { x: isMobile ? -200 : -500, opacity: 0 });
+    gsap.set(".talent", { x: isMobile ? 200 : 500, opacity: 0 });
+    gsap.set(".real-tag", {
+    opacity: 0,
+    scale: 0.85,
+    xPercent: -50,
+    yPercent: -50,
+    left: "50%",
+    top: "50%",
+    transformOrigin: "50% 50%",
+    force3D: true
+  });
     gsap.set(".content-reveal", { visibility: "visible", opacity: 0, y: 40 });
-    gsap.set(".reveal-item",    { y: 20, opacity: 0 });
+    gsap.set(".reveal-item", { y: 20, opacity: 0 });
 
     const purposeTL = gsap.timeline({
       scrollTrigger: {
@@ -538,27 +649,25 @@
 
     purposeTL
       .to(".seeking", { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
-      .to(".talent",  { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
-
-      .to(".seeking",  { y: -70, scale: 0.5, duration: 0.5, ease: "power2.inOut" }, 0.35)
-      .to(".talent",   { y: 70,  scale: 0.5, webkitTextStroke: "1px rgba(255,255,255,1)", duration: 0.5, ease: "power2.inOut" }, 0.35)
-
+      .to(".talent", { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
+      .to(".seeking", { y: isMobile ? -40 : -70, scale: 0.5, duration: 0.5, ease: "power2.inOut" }, 0.35)
+      .to(".talent", { y: isMobile ? 40 : 70, scale: 0.5, webkitTextStroke: "1px rgba(255,255,255,1)", duration: 0.5, ease: "power2.inOut" }, 0.35)
       .to(".real-tag", { opacity: 1, scale: 1.1, duration: 0.5, ease: "power2.out" }, 0.35)
-
       .to(".heading-group", { y: "-10vh", scale: 0.8, duration: 0.45, ease: "power3.inOut" }, 0.75)
-
       .to(".content-reveal", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.95)
-      .to(".reveal-item",    { opacity: 1, y: 0, stagger: 0.15, duration: 0.4, ease: "sine.out" }, 1.1);
+      .to(".reveal-item", { opacity: 1, y: 0, stagger: 0.15, duration: 0.4, ease: "sine.out" }, 1.1);
 
     if (falcon) {
       purposeTL
-        .to(camera.position, { z: 0.2, y: 0, ease: "none", duration: 0.6 }, 0.2)
+        .to(camera.position, { z: isMobile ? 4 : 0.2, y: 0, ease: "none", duration: 0.6 }, 0.2)
         .to(falcon.rotation, { y: Math.PI * 2, ease: "power2.in", duration: 0.6 }, 0.2);
     }
 
+    // 2. Rounds Section Timeline
     const roundsTL = gsap.timeline({
       scrollTrigger: { trigger: ".rounds-outer", start: "top top", end: "+=300%", pin: true, scrub: 0.6 }
     });
+    
     gsap.set("#card-1", { className: "round-card-pinned active" });
     gsap.set("#content-1", { height: "auto", opacity: 1 });
 
@@ -574,28 +683,39 @@
       .to("#card-3", { className: "round-card-pinned active", duration: 0.1 }, "<")
       .to("#content-3", { height: "auto", opacity: 1, duration: 0.8 }, "<");
 
+    // 3. Timeline Progress
     const timelineTL = gsap.timeline({
-      scrollTrigger: { trigger: "#timeline", start: "top 60%", end: "top 10%", scrub: 1 }
+      scrollTrigger: { 
+        trigger: "#timeline", 
+        start: isMobile ? "top 80%" : "top 60%", 
+        end: isMobile ? "bottom 80%" : "top 10%", 
+        scrub: 1 
+      }
     });
-    const nodeOn  = { backgroundColor: "#fff", borderColor: "#fff", boxShadow: "0 0 20px rgba(255,255,255,0.4)", scale: 1.1 };
+    
+    const nodeOn = { backgroundColor: "#fff", borderColor: "#fff", boxShadow: "0 0 20px rgba(255,255,255,0.4)", scale: 1.1 };
     const labelOn = { color: "#fff", fontWeight: "500" };
 
     timelineTL
       .to("#node-reg .tl-node", nodeOn, 0).to("#node-reg .tl-label", labelOn, 0)
-      .to(".tl-progress-line", { width: "25%", duration: 1 })
+      .to(".tl-progress-line", { [isMobile ? 'height' : 'width']: "25%", duration: 1 })
       .to("#node-r1 .tl-node", nodeOn).to("#node-r1 .tl-label", labelOn, "<")
-      .to(".tl-progress-line", { width: "50%", duration: 1 })
+      .to(".tl-progress-line", { [isMobile ? 'height' : 'width']: "50%", duration: 1 })
       .to("#node-r2 .tl-node", nodeOn).to("#node-r2 .tl-label", labelOn, "<")
-      .to(".tl-progress-line", { width: "75%", duration: 1 })
+      .to(".tl-progress-line", { [isMobile ? 'height' : 'width']: "75%", duration: 1 })
       .to("#node-r3 .tl-node", nodeOn).to("#node-r3 .tl-label", labelOn, "<")
-      .to(".tl-progress-line", { width: "100%", duration: 1 })
+      .to(".tl-progress-line", { [isMobile ? 'height' : 'width']: "100%", duration: 1 })
       .to("#node-eval .tl-node", nodeOn).to("#node-eval .tl-label", labelOn, "<");
   }
 
+  // Handle Resize
   window.addEventListener('resize', () => {
-    camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+    const width = canvasContainer.clientWidth;
+    const height = canvasContainer.clientHeight;
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+    renderer.setSize(width, height);
+    ScrollTrigger.refresh();
   });
 </script>
 
