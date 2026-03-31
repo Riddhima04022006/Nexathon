@@ -4,16 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexathon | Prove You Code</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap');
+
   :root {
     --bg: #0a0a0a;
     --surface: #111111;
@@ -26,6 +22,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   html { scroll-behavior: smooth; }
 
   body {
@@ -34,9 +31,9 @@
     font-family: 'DM Sans', sans-serif;
     overflow-x: hidden;
     overscroll-behavior: none;
-    opacity: 1;
-    visibility: visible;
   }
+
+  /* Desktop Nav (Remains untouched for > 1024px) */
 
   nav {
     position: fixed;
@@ -68,6 +65,8 @@
     display: block;
     white-space: nowrap;
   }
+
+  /* Mobile Nav Overrides */
 
   @media (max-width: 1024px) {
     nav {
@@ -104,6 +103,8 @@
     overflow: hidden;
   }
 
+  /* Mobile Hero Adjustments */
+
   @media (max-width: 768px) {
     .hero { padding: 40px 24px 100px 24px; justify-content: center; }
   }
@@ -114,7 +115,7 @@
     width: 100%; height: 100%;
     z-index: 1;
     pointer-events: none;
-    opacity: 0;
+    opacity: 0; /* Hidden until model loads */
     transition: opacity 1s ease;
   }
 
@@ -160,23 +161,26 @@
   }
 
   .hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 60px; }
-  
+
   @media (max-width: 900px) {
     .hero-bottom { flex-direction: column; align-items: flex-start; gap: 40px; }
   }
 
   .hero-sub { max-width: 440px; font-size: 1rem; font-weight: 300; line-height: 1.85; color: rgb(255, 255, 255); }
+
   .hero-sub strong { color: var(--text); font-weight: 500; }
 
   .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 36px; }
-  
+
   @media (max-width: 900px) {
     .hero-right { align-items: flex-start; width: 100%; }
     .hero-stats { width: 100%; justify-content: flex-start; }
   }
 
   .hero-stats { display: flex; gap: 52px; }
+
   .hero-stat-label { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+
   .hero-stat-val { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); }
 
   .register-btn {
@@ -206,7 +210,9 @@
   }
 
   .register-btn:hover::before { transform: translateX(0); }
+
   .register-btn:hover { color: var(--bg); border-color: var(--white); }
+
   .register-btn span { position: relative; z-index: 1; }
 
   .toast {
@@ -274,6 +280,7 @@
   }
 
   .seeking { color: var(--white); z-index: 5; }
+
   .talent  { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.4); z-index: 4; }
 
   .real-tag {
@@ -317,12 +324,17 @@
   }
 
   .desc-text { font-size: 1.1rem; color: var(--muted); line-height: 1.85; font-weight: 300; }
+
   .feature-list { list-style: none; border-left: 1px solid var(--border-strong); padding-left: 40px; }
+
   .feature-list h4 { font-size: 1rem; color: var(--white); font-weight: 500; margin-bottom: 8px; }
+
   .feature-list p  { color: var(--dim); font-size: 0.88rem; line-height: 1.6; }
+
   .feature-list li + li { margin-top: 30px; }
 
   .rounds-outer { position: relative; background: var(--surface); }
+
   .rounds-sticky-wrapper { display: grid; grid-template-columns: 0.8fr 1.2fr; height: 100vh; width: 100%; overflow: hidden; }
 
   @media (max-width: 900px) {
@@ -331,7 +343,9 @@
   }
 
   .rounds-left { display: flex; flex-direction: column; justify-content: center; padding-left: 80px; border-right: 1px solid var(--border); }
+
   .rounds-left h2 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 5vw, 5rem); line-height: 1; font-weight: 900; padding-top: 50px; }
+
   .rounds-right { display: flex; flex-direction: column; justify-content: center; padding: 0 80px; }
 
   @media (max-width: 768px) {
@@ -339,86 +353,61 @@
   }
 
   .round-card-pinned { border-bottom: 1px solid var(--border); padding: 20px 0; width: 100%; transition: all 0.4s ease-out; }
+
   .round-card-pinned:last-child { border-bottom: none; }
+
   .round-title { font-family: 'Playfair Display', serif; font-size: clamp(1.9rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; color: var(--muted); transition: color 0.4s ease, font-size 0.4s ease; margin-bottom: 8px; }
+
   .round-card-pinned.active .round-title { color: var(--white); font-size: clamp(1.8rem, 4vw, 3.2rem); }
-  
-  .round-content-wrapper { max-height: 0; overflow: hidden; opacity: 0; }
+
+  .round-content-wrapper { height: 0; overflow: hidden; opacity: 0; }
+
   .round-subtitle { font-size: 1rem; font-weight: 300; font-style: italic; color: var(--muted); margin: 10px 0 20px; }
+
   .round-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+
   .round-list li { display: flex; align-items: baseline; gap: 12px; font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+
   .round-list li::before { content: '•'; color: var(--dim); }
 
   .timeline-section { width: 100%; padding: 120px 0; border-top: 1px solid var(--border); }
+
   .timeline-header { padding: 0 80px; margin-bottom: 60px; }
-  
+
   @media (max-width: 768px) {
     .timeline-header { padding: 0 24px; }
     .tl-container { padding: 0 24px !important; }
-    .tl-track {
-      flex-direction: column !important;
-      gap: 0 !important;
-      align-items: flex-start !important;
-    }
-    .tl-track::before {
-      left: 19px !important;
-      top: 0 !important;
-      bottom: 0 !important;
-      width: 1px !important;
-      height: 100% !important;
-      right: auto !important;
-    }
-    .tl-progress-line {
-      left: 18px !important;
-      top: 20px !important;
-      width: 2px !important;
-      height: 0 !important; 
-    }
-    .tl-item {
-      flex-direction: row !important;
-      gap: 20px !important;
-      align-items: center !important;
-      padding: 16px 0 !important;
-      width: 100% !important;
-    }
-    .tl-node {
-      margin-bottom: 0 !important;
-      flex-shrink: 0 !important;
-    }
-    .tl-label {
-      text-align: left !important;
-    }
+    .tl-track { flex-direction: column; gap: 40px; align-items: flex-start !important; }
+    .tl-track::before { left: 20px; top: 0; bottom: 0; width: 1px; height: 100%; }
+    .tl-progress-line { left: 33px; top: 0; width: 2px !important; height: 0%; }
+    .tl-item { flex-direction: row !important; gap: 20px; align-items: center; }
+    .tl-node { margin-bottom: 0 !important; }
   }
 
   .tl-container { width: 100%; padding: 0 80px; position: relative; }
+
   .tl-track { display: flex; width: 100%; position: relative; justify-content: space-between; }
+
   .tl-track::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 1px; background: var(--border-strong); z-index: 0; }
 
-  .tl-progress-line {
-    position: absolute;
-    top: 19px;
-    left: 20px;
-    width: 0%;
-    height: 0%; /* ✅ ADD THIS */
-    background: var(--white);
-    box-shadow: 0 0 15px rgba(255,255,255,0.6);
-    z-index: 1;
-    transition: none; 
-  }
+  .tl-progress-line { position: absolute; top: 20px; left: 33px; width: 0%; height: 2px; background: var(--white); box-shadow: 0 0 15px rgba(255,255,255,0.6); z-index: 1; }
 
   .tl-item { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
+
   .tl-node { width: 40px; height: 40px; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 50%; margin-bottom: 24px; transition: all 0.4s ease; }
+
   .tl-label { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: 0.3s; }
 
   .container { max-width: 1200px; margin: 0 auto; padding: 0 100px 0 80px; }
-  
+
   @media (max-width: 768px) {
     .container { padding: 0 24px; }
   }
 
   .section-heading-large { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1.1; color: var(--text); }
+
   .lb-card { position: relative; border: 1px solid var(--border); background: var(--surface); padding: 100px 80px; overflow: hidden; margin-bottom: 150px; }
-  
+
   @media (max-width: 850px) {
     .lb-card { padding: 60px 24px; }
     .lb-content { flex-direction: column; text-align: center; gap: 40px; }
@@ -426,13 +415,27 @@
   }
 
   .lb-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Playfair Display', serif; font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; letter-spacing: 0.1em; }
+
   .lb-content { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+
   .lb-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; line-height: 1.1; }
+
   .lb-btn { display: inline-block; border: 1px solid var(--border-strong); padding: 20px 50px; color: var(--dim); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em; cursor: not-allowed; }
 
   .fade-up { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+
   .fade-up.visible { opacity: 1; transform: translateY(0); }
 </style>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+  <script type="module" crossorigin src="/Nexathon-V2/assets/structure-z3IKW62C.js"></script>
+  <link rel="modulepreload" crossorigin href="/Nexathon-V2/assets/modulepreload-polyfill-BxR_cmXS.js">
 </head>
 <body>
 
@@ -567,9 +570,7 @@
       </div>
     </section>
   </div>
-</main>
-
-<script>
+</main><script>
   const registerBtn = document.getElementById('registerBtn');
   const toast = document.getElementById('toast');
   let toastTimer;
@@ -582,257 +583,8 @@
 </script>
 
 <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-  }
-</script>
 
-<script type="module">
-  import * as THREE from 'three';
-  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const isMobile = window.innerWidth < 768;
-
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-
-  const canvasContainer = document.getElementById('canvas-container');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-  
-  camera.position.z = isMobile ? 12 : 8;
-  camera.position.y = 1;
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1;
-  renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  canvasContainer.appendChild(renderer.domElement);
-
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-  const spot = new THREE.PointLight(0xffffff, 25);
-  spot.position.set(5, 5, 5);
-  scene.add(spot);
-
-  let falcon;
-  const loader = new GLTFLoader();
-
-  loader.load(
-    import.meta.env.BASE_URL + 'millennium_falcon.glb',
-    (gltf) => {
-      falcon = gltf.scene;
-      const box = new THREE.Box3().setFromObject(falcon);
-      const center = box.getCenter(new THREE.Vector3());
-      falcon.position.sub(center);
-      falcon.scale.set(1.6, 1.6, 1.6);
-      
-      if (window.innerWidth > 1024) {
-        falcon.position.x = 3; 
-        camera.position.z = 8;
-        camera.position.y = 1;
-      } else {
-        falcon.position.x = 0; 
-        camera.position.z = 10; 
-      }
-      
-      scene.add(falcon);
-      canvasContainer.style.opacity = "1";
-
-      addFalconTweens();
-      ScrollTrigger.refresh(true);
-    },
-    undefined,
-    (err) => {
-      console.warn('3D model not loaded:', err);
-    }
-  );
-
-  function animate() {
-    requestAnimationFrame(animate);
-    if (falcon) falcon.rotation.y += 0.0015;
-    renderer.render(scene, camera);
-  }
-  animate();
-  ScrollTrigger.addEventListener("refresh", () => {
-    renderer.render(scene, camera);
-  });
-
-  ScrollTrigger.addEventListener("refreshInit", () => {
-    if (falcon) {
-      falcon.rotation.y = falcon.rotation.y % (Math.PI * 2);
-    }
-  });
-  window.addEventListener("load", () => {
-    initScrollAnimations();
-  });
-
-  function initScrollAnimations() {
-    gsap.set(".seeking", { x: isMobile ? -200 : -500, opacity: 0 });
-    gsap.set(".talent", { x: isMobile ? 200 : 500, opacity: 0 });
-    gsap.set(".real-tag", {
-      opacity: 0,
-      scale: 0.85,
-      xPercent: -50,
-      yPercent: -50,
-      left: "50%",
-      top: "50%",
-      transformOrigin: "50% 50%",
-      force3D: true
-    });
-    gsap.set(".content-reveal", { visibility: "visible", opacity: 0, y: 40 });
-    gsap.set(".reveal-item", { y: 20, opacity: 0 });
-    function openContent(id) {
-      const el = document.querySelector(id);
-      return gsap.to(el, {
-        maxHeight: () => el.scrollHeight,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power2.out"
-      });
-    }
-
-    function closeContent(id) {
-      const el = document.querySelector(id);
-      return gsap.to(el, {
-        maxHeight: 0,
-        opacity: 0,
-        duration: 0.6,
-        ease: "power2.inOut"
-      });
-    }
-    const purposeTL = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#purpose",
-        start: "top top",
-        end: "+=100%",
-        scrub: 0.7,
-        pin: ".sticky-box",
-        anticipatePin: 1,
-        pinSpacing: true
-      }
-    });
-
-    purposeTL
-      .to(".seeking", { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
-      .to(".talent", { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 0)
-      .to(".seeking", { y: isMobile ? -40 : -70, scale: 0.5, duration: 0.5, ease: "power2.inOut" }, 0.35)
-      .to(".talent", { y: isMobile ? 40 : 70, scale: 0.5, webkitTextStroke: "1px rgba(255,255,255,1)", duration: 0.5, ease: "power2.inOut" }, 0.35)
-      .to(".real-tag", { opacity: 1, scale: 1.1, duration: 0.5, ease: "power2.out" }, 0.35)
-      .to(".heading-group", { y: "-10vh", scale: 0.8, duration: 0.45, ease: "power3.inOut" }, 0.75)
-      .to(".content-reveal", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.95)
-      .to(".reveal-item", { opacity: 1, y: 0, stagger: 0.15, duration: 0.4, ease: "sine.out" }, 1.1);
-
-    window._purposeTL = purposeTL;
-
-    const roundsScrollDistance = isMobile ? "+=150%" : "+=300%";
-
-    const roundsTL = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".rounds-outer",
-        start: "top top",
-        end: roundsScrollDistance,
-        pin: true,
-        scrub: 0.6
-      }
-    });
-    
-    gsap.set("#card-1", { className: "round-card-pinned active" });
-    const c1 = document.querySelector("#content-1");
-    gsap.set(c1, { maxHeight: () => c1.scrollHeight, opacity: 1 });
-
-    roundsTL
-      .to({}, { duration: 0.5 })
-
-      .add(() => closeContent("#content-1"))
-      .add(() => {
-        document.querySelector("#card-1").classList.remove("active");
-        document.querySelector("#card-2").classList.add("active");
-      }, "<")
-      .add(() => openContent("#content-2"), ">-0.2")
-
-      .to({}, { duration: 0.5 })
-
-      .add(() => closeContent("#content-2"))
-      .add(() => {
-        document.querySelector("#card-2").classList.remove("active");
-        document.querySelector("#card-3").classList.add("active");
-      }, "<")
-      .add(() => openContent("#content-3"), ">-0.2")
-
-      .to({}, { duration: 0.5 });                             
-    const progressProp = isMobile ? "height" : "width";
-    const nodeOn = {
-      backgroundColor: "#fff",
-      borderColor: "#fff",
-      boxShadow: "0 0 20px rgba(255,255,255,0.4)",
-      scale: 1.1
-    };
-    const labelOn = { color: "#fff", fontWeight: "500" };
-    gsap.set(".tl-progress-line", {
-      width: isMobile ? "2px" : "0%",
-      height: isMobile ? "0%" : "2px"
-    });
-    const timelineTL = gsap.timeline({
-      scrollTrigger: { 
-        trigger: "#timeline", 
-        start: isMobile ? "top 80%" : "top 60%", 
-        end: isMobile ? "bottom 60%" : "top 10%", 
-        scrub: 1 
-      }
-    });
-
-    timelineTL
-      .to("#node-reg .tl-node", nodeOn, 0)
-      .to("#node-reg .tl-label", labelOn, 0)
-      .to(".tl-progress-line", { [progressProp]: "25%", duration: 1 })
-      .to("#node-r1 .tl-node", nodeOn)
-      .to("#node-r1 .tl-label", labelOn, "<")
-      .to(".tl-progress-line", { [progressProp]: "50%", duration: 1 })
-      .to("#node-r2 .tl-node", nodeOn)
-      .to("#node-r2 .tl-label", labelOn, "<")
-      .to(".tl-progress-line", { [progressProp]: "75%", duration: 1 })
-      .to("#node-r3 .tl-node", nodeOn)
-      .to("#node-r3 .tl-label", labelOn, "<")
-      .to(".tl-progress-line", { [progressProp]: "100%", duration: 1 })
-      .to("#node-eval .tl-node", nodeOn)
-      .to("#node-eval .tl-label", labelOn, "<");
-  }
-
-  window.addEventListener('resize', () => {
-    const width = canvasContainer.clientWidth;
-    const height = canvasContainer.clientHeight;
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-    document.querySelectorAll(".round-content-wrapper").forEach(el => {
-      if (el.style.maxHeight !== "0px") {
-        el.style.maxHeight = el.scrollHeight + "px";
-      }
-    });
-    ScrollTrigger.refresh();
-  });
-
-  const _origLoad = loader.load.bind(loader);
-  function addFalconTweens() {
-    if (!falcon || !window._purposeTL) return;
-    window._purposeTL
-      .to(camera.position, { z: isMobile ? 4 : 0.2, y: 0, ease: "none", duration: 0.6 }, 0.2)
-      .to(falcon.rotation, { y: Math.PI * 2, ease: "power2.in", duration: 0.6 }, 0.2);
-    ScrollTrigger.refresh();
-  }
-  window._addFalconTweens = addFalconTweens;
-</script>
-
+
 
 </body>
 </html>
