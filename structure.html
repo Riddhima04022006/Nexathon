@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexathon | Prove You Code</title>
 
+<!-- FIX 2: Preload fonts to prevent FOUC / flash -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap">
@@ -28,16 +29,19 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
+  /* FIX 2: Body starts visible — no invisible flash */
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
     overflow-x: hidden;
     overscroll-behavior: none;
+    /* Ensure body is always visible */
     opacity: 1;
     visibility: visible;
   }
 
+  /* Desktop Nav */
   nav {
     position: fixed;
     top: 0; right: 0; bottom: 0;
@@ -69,6 +73,7 @@
     white-space: nowrap;
   }
 
+  /* Mobile Nav Overrides */
   @media (max-width: 1024px) {
     nav {
       top: auto; left: 0; bottom: 0;
@@ -114,6 +119,8 @@
     width: 100%; height: 100%;
     z-index: 1;
     pointer-events: none;
+    /* FIX 2: Start invisible, fade in only when 3D model loads — this is fine
+       because the hero text is always visible underneath */
     opacity: 0;
     transition: opacity 1s ease;
   }
@@ -355,11 +362,14 @@
   @media (max-width: 768px) {
     .timeline-header { padding: 0 24px; }
     .tl-container { padding: 0 24px !important; }
+
+    /* FIX 3: Mobile timeline — vertical layout with visible progress line */
     .tl-track {
       flex-direction: column !important;
       gap: 0 !important;
       align-items: flex-start !important;
     }
+    /* Vertical backbone */
     .tl-track::before {
       left: 19px !important;
       top: 0 !important;
@@ -368,11 +378,13 @@
       height: 100% !important;
       right: auto !important;
     }
+    /* FIX 3: Vertical progress line — positioned correctly */
     .tl-progress-line {
       left: 18px !important;
       top: 20px !important;
       width: 2px !important;
-      height: 0 !important; 
+      height: 0 !important; /* starts at 0, animated to 100% */
+      /* Remove the horizontal positioning */
     }
     .tl-item {
       flex-direction: row !important;
@@ -394,6 +406,7 @@
   .tl-track { display: flex; width: 100%; position: relative; justify-content: space-between; }
   .tl-track::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 1px; background: var(--border-strong); z-index: 0; }
 
+  /* FIX 3: Progress line base styles — desktop horizontal */
   .tl-progress-line {
     position: absolute;
     top: 19px;
@@ -403,7 +416,7 @@
     background: var(--white);
     box-shadow: 0 0 15px rgba(255,255,255,0.6);
     z-index: 1;
-    transition: none; 
+    transition: none; /* let GSAP handle it */
   }
 
   .tl-item { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
@@ -599,11 +612,13 @@
 
   const isMobile = window.innerWidth < 768;
 
+  // Intersection Observer for fade-up elements
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
+  // Three.js Setup
   const canvasContainer = document.getElementById('canvas-container');
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
@@ -624,6 +639,8 @@
   let falcon;
   const loader = new GLTFLoader();
 
+  // FIX 2: Always call initScrollAnimations regardless of model load success/failure
+  // Model load — try to show 3D, but scroll animations are never blocked by it
   loader.load(
     import.meta.env.BASE_URL + 'millennium_falcon.glb',
     (gltf) => {
@@ -645,10 +662,12 @@
       scene.add(falcon);
       canvasContainer.style.opacity = "1";
 
+      // Refresh ScrollTrigger after model adds geometry to scene
       ScrollTrigger.refresh();
     },
     undefined,
     (err) => {
+      // Model failed — that's okay, page is already functional
       console.warn('3D model not loaded:', err);
     }
   );
@@ -659,10 +678,14 @@
     renderer.render(scene, camera);
   }
   animate();
- 
+
+  // FIX 2: initScrollAnimations runs immediately on DOMContentLoaded,
+  // not gated behind the 3D model load. Model-specific tweens are added
+  // conditionally later via ScrollTrigger.refresh().
   initScrollAnimations();
 
   function initScrollAnimations() {
+    // --- Purpose Section ---
     gsap.set(".seeking", { x: isMobile ? -200 : -500, opacity: 0 });
     gsap.set(".talent", { x: isMobile ? 200 : 500, opacity: 0 });
     gsap.set(".real-tag", {
@@ -700,8 +723,14 @@
       .to(".content-reveal", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.95)
       .to(".reveal-item", { opacity: 1, y: 0, stagger: 0.15, duration: 0.4, ease: "sine.out" }, 1.1);
 
+    // Model tweens added only when falcon exists (runs after load)
+    // We store the timeline so we can add to it post-load
     window._purposeTL = purposeTL;
 
+    // --- FIX 1: Rounds Section — shorter scroll distance on mobile ---
+    // Desktop: 300% feels natural (3 cards × ~100vh each)
+    // Mobile: 150% is enough — the section is already full-height and
+    //         users are on a smaller screen with less patience for long pins
     const roundsScrollDistance = isMobile ? "+=150%" : "+=300%";
 
     const roundsTL = gsap.timeline({
@@ -718,17 +747,19 @@
     gsap.set("#content-1", { height: "auto", opacity: 1 });
 
     roundsTL
-      .to({}, { duration: 0.5 })                                      
+      .to({}, { duration: 0.5 })                                         // brief pause on card 1
       .to("#content-1", { height: 0, opacity: 0, duration: 0.6 })
       .to("#card-1", { className: "round-card-pinned", duration: 0.1 }, "<")
       .to("#card-2", { className: "round-card-pinned active", duration: 0.1 }, "<")
       .to("#content-2", { height: "auto", opacity: 1, duration: 0.6 }, "<")
-      .to({}, { duration: 0.5 })                                         
+      .to({}, { duration: 0.5 })                                         // brief pause on card 2
       .to("#content-2", { height: 0, opacity: 0, duration: 0.6 })
       .to("#card-2", { className: "round-card-pinned", duration: 0.1 }, "<")
       .to("#card-3", { className: "round-card-pinned active", duration: 0.1 }, "<")
       .to("#content-3", { height: "auto", opacity: 1, duration: 0.6 }, "<")
-      .to({}, { duration: 0.5 });                                       
+      .to({}, { duration: 0.5 });                                        // brief pause on card 3
+
+    // --- FIX 3: Timeline Progress — mobile animates height, desktop animates width ---
     const progressProp = isMobile ? "height" : "width";
     const nodeOn = {
       backgroundColor: "#fff",
@@ -764,6 +795,7 @@
       .to("#node-eval .tl-label", labelOn, "<");
   }
 
+  // Handle Resize
   window.addEventListener('resize', () => {
     const width = canvasContainer.clientWidth;
     const height = canvasContainer.clientHeight;
@@ -773,6 +805,8 @@
     ScrollTrigger.refresh();
   });
 
+  // FIX 2: Hook model tweens onto purposeTL once falcon is confirmed loaded
+  // We poll briefly after load; ScrollTrigger.refresh() handles the rest
   const _origLoad = loader.load.bind(loader);
   function addFalconTweens() {
     if (!falcon || !window._purposeTL) return;
@@ -781,12 +815,17 @@
       .to(falcon.rotation, { y: Math.PI * 2, ease: "power2.in", duration: 0.6 }, 0.2);
     ScrollTrigger.refresh();
   }
+  // Expose so the loader callback above can call it
   window._addFalconTweens = addFalconTweens;
 </script>
 
+<!-- Patch loader callback to wire up model tweens after load -->
 <script type="module">
+  // Wait for falcon to be available then attach tweens
+  // Uses a short polling interval — stops as soon as done
   const poll = setInterval(() => {
     if (window._addFalconTweens && document.querySelector('#canvas-container canvas')) {
+      // If falcon already loaded before this ran
       if (window._purposeTL) {
         clearInterval(poll);
       }
