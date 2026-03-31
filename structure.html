@@ -354,7 +354,7 @@
     .tl-container { padding: 0 24px !important; }
     .tl-track { flex-direction: column; gap: 40px; align-items: flex-start !important; }
     .tl-track::before { left: 20px; top: 0; bottom: 0; width: 1px; height: 100%; }
-    .tl-progress-line { left: 23px; top: 0; width: 2px !important; height: 0%; }
+    .tl-progress-line { left: 33px; top: 0; width: 2px !important; height: 0%; }
     .tl-item { flex-direction: row !important; gap: 20px; align-items: center; }
     .tl-node { margin-bottom: 0 !important; }
   }
@@ -362,7 +362,7 @@
   .tl-container { width: 100%; padding: 0 80px; position: relative; }
   .tl-track { display: flex; width: 100%; position: relative; justify-content: space-between; }
   .tl-track::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 1px; background: var(--border-strong); z-index: 0; }
-  .tl-progress-line { position: absolute; top: 20px; left: 23px; width: 0%; height: 2px; background: var(--white); box-shadow: 0 0 15px rgba(255,255,255,0.6); z-index: 1; }
+  .tl-progress-line { position: absolute; top: 20px; left: 33px; width: 0%; height: 2px; background: var(--white); box-shadow: 0 0 15px rgba(255,255,255,0.6); z-index: 1; }
   .tl-item { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
   .tl-node { width: 40px; height: 40px; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 50%; margin-bottom: 24px; transition: all 0.4s ease; }
   .tl-label { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: 0.3s; }
@@ -584,7 +584,7 @@
 
   // Load the model
   loader.load(
-    '/public/millennium_falcon.glb',
+    import.meta.env.BASE_URL + 'millennium_falcon.glb',
     (gltf) => {
       falcon = gltf.scene;
       const box = new THREE.Box3().setFromObject(falcon);
